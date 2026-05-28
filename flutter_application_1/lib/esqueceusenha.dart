@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/login_styles.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
+
 class EsqueceuSenhaScreen extends StatefulWidget {
   const EsqueceuSenhaScreen({super.key});
 
@@ -21,18 +24,47 @@ class _EsqueceuSenhaScreenState extends State<EsqueceuSenhaScreen> {
     return email.contains('@') && email.contains('.');
   }
 
-  void recuperarSenha() {
-    String email = emailController.text.trim();
+Future<void> recuperarSenha() async {
 
-    if (email.isEmpty) {
-      mostrarErro('Digite seu email');
-      return;
-    }
+  String email = emailController.text.trim();
 
-    if (!emailValido(email)) {
-      mostrarErro('Email inválido');
-      return;
-    }
+  if (email.isEmpty) {
+
+    mostrarErro('Digite seu email');
+    return;
+  }
+
+  if (!emailValido(email)) {
+
+    mostrarErro('Email inválido');
+    return;
+  }
+
+  try {
+
+    await FirebaseAuth.instance
+        .sendPasswordResetEmail(
+      email: email,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+
+      const SnackBar(
+
+        content: Text(
+          'Email de recuperação enviado!',
+        ),
+      ),
+    );
+
+    Navigator.pop(context);
+
+  } on FirebaseAuthException catch (e) {
+
+    mostrarErro(
+      e.message ?? 'Erro ao enviar email',
+    );
+  }
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

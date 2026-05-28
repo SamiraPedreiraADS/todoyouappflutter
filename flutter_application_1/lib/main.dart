@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_application_1/cadastro.dart';
 
-String? savedEmail;
-String? savedSenha;
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
     DevicePreview(
       enabled: true,
@@ -15,18 +22,25 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
+
       title: 'Tela Login',
       debugShowCheckedModeBanner: false,
+
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
+
       theme: ThemeData(
+
         useMaterial3: true,
+
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
 
         colorScheme: ColorScheme.fromSeed(
@@ -41,6 +55,7 @@ class MyApp extends StatelessWidget {
         ),
 
         inputDecorationTheme: InputDecorationTheme(
+
           filled: false,
 
           border: OutlineInputBorder(
@@ -67,22 +82,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
 
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1,
-            ),
-          ),
-
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1.5,
-            ),
-          ),
-
           hintStyle: const TextStyle(
             color: Colors.grey,
             fontSize: 13,
@@ -99,19 +98,11 @@ class MyApp extends StatelessWidget {
             backgroundColor: const Color(0xFF3F51B5),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            elevation: 0,
           ),
         ),
       ),
-      home: RegisterScreen(
-        onRegister: (email, senha) {
-          savedEmail = email;
-          savedSenha = senha;
-        },
-      ),
+
+      home: const RegisterScreen(),
     );
   }
 }

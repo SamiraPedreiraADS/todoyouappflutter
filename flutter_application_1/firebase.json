@@ -1,0 +1,38 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "apptodoyou",
+          "appId": "1:687617042368:android:2cfc55693cd40953e58a25",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "apptodoyou",
+          "configurations": {
+            "android": "1:687617042368:android:2cfc55693cd40953e58a25",
+            "ios": "1:687617042368:ios:1edc399410596f2be58a25",
+            "macos": "1:687617042368:ios:1edc399410596f2be58a25",
+            "web": "1:687617042368:web:107cb41d9644c57fe58a25"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

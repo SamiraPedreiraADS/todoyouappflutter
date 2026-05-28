@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home.dart';
 import 'package:flutter_application_1/login_styles.dart';
-import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/esqueceusenha.dart';
 import 'package:flutter_application_1/cadastro.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
 
@@ -27,9 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return email.contains('@') && email.contains('.');
   }
 
-  void login() {
+  Future<void> login() async {
+
     String email = emailController.text.trim();
-    String senha = senhaController.text;
+    String senha = senhaController.text.trim();
 
     if (email.isEmpty || senha.isEmpty) {
       mostrarErro('Preencha todos os campos');
@@ -41,44 +44,87 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    if (email != savedEmail || senha != savedSenha) {
-      mostrarErro('Email ou senha incorretos');
-      return;
-    }
+    try {
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Home(),
-      ),
-    );
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: senha,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login realizado com sucesso!'),
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Home(),
+        ),
+      );
+
+    } on FirebaseAuthException catch (e) {
+
+      String mensagem = '';
+
+      if (e.code == 'user-not-found') {
+        mensagem = 'Usuário não encontrado';
+      } else if (e.code == 'wrong-password') {
+        mensagem = 'Senha incorreta';
+      } else if (e.code == 'invalid-email') {
+        mensagem = 'Email inválido';
+      } else {
+        mensagem = 'Erro ao fazer login';
+      }
+
+      mostrarErro(mensagem);
+    }
   }
 
   void mostrarErro(String mensagem) {
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensagem)),
+      SnackBar(
+        content: Text(mensagem),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       body: SafeArea(
+
         child: SingleChildScrollView(
+
           child: SizedBox(
-            height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+
+            height: MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top,
+
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32,
+                vertical: 24,
+              ),
+
               child: Column(
+
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
+
                 children: [
+
                   const Text(
                     'ToDo',
                     style: TextStyle(
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
-                      color:  Color.fromARGB(255, 97, 117, 228),
+                      color: Color.fromARGB(255, 97, 117, 228),
                     ),
                   ),
 
@@ -101,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color:Color.fromARGB(255, 39, 54, 139),
+                      color: Color.fromARGB(255, 39, 54, 139),
                     ),
                   ),
 
@@ -123,9 +169,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 35),
 
                   SizedBox(
+
                     width: double.infinity,
+
                     child: ElevatedButton(
+
                       onPressed: login,
+
                       child: const Text(
                         'Entrar',
                         style: TextStyle(
@@ -139,14 +189,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 14),
 
                   TextButton(
+
                     onPressed: () {
+
                       Navigator.push(
                         context,
+
                         MaterialPageRoute(
-                          builder: (context) => const EsqueceuSenhaScreen(),
+                          builder: (context) =>
+                              const EsqueceuSenhaScreen(),
                         ),
                       );
                     },
+
                     child: const Text(
                       'Esqueceu a senha?',
                       style: TextStyle(
@@ -158,19 +213,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   TextButton(
+
                     onPressed: () {
+
                       Navigator.push(
                         context,
+
                         MaterialPageRoute(
-                          builder: (context) => RegisterScreen(
-                            onRegister: (email, senha) {
-                              savedEmail = email;
-                              savedSenha = senha;
-                            },
-                          ),
+                          builder: (context) =>
+                              const RegisterScreen(),
                         ),
                       );
                     },
+
                     child: const Text(
                       'Criar conta',
                       style: TextStyle(
@@ -180,6 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
+
                 ],
               ),
             ),
