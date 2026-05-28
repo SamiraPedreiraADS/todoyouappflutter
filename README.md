@@ -9,5 +9,5 @@ Aplicativo desenvolvido em Flutter com funcionalidades de:
 Tecnologias:
 - Flutter
 - Dart
-
+- Firebase 
 Desenvolvido por Samira
